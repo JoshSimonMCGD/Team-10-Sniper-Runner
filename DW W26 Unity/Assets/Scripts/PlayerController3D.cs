@@ -8,7 +8,7 @@ public class PlayerController3D : MonoBehaviour
 
     [Header("References")]
     [field: SerializeField] public Rigidbody Rigidbody { get; private set; }
-    [field: SerializeField] public Renderer ColorRenderer { get; private set; } // MeshRenderer or SkinnedMeshRenderer
+    [field: SerializeField] public Renderer ColorRenderer { get; private set; }
 
     [field: SerializeField] public CapsuleCollider Capsule { get; private set; }
     [SerializeField] private Transform moveReference; //camera transform for camera-relative movement
@@ -17,6 +17,9 @@ public class PlayerController3D : MonoBehaviour
     [field: SerializeField] public float MoveSpeed { get; private set; } = 6f;
     [field: SerializeField] public float JumpForce { get; private set; } = 5f;
     [SerializeField] private float airControlMultiplier = 0.5f;
+    [field: SerializeField] public Animator Animator { get; private set; }
+    
+
 
     [Header("Ground Check")]
     [SerializeField] private float groundCheckDistance = 0.15f;
@@ -78,10 +81,25 @@ public class PlayerController3D : MonoBehaviour
 
         Vector2 move2 = InputActionMove != null ? InputActionMove.ReadValue<Vector2>() : Vector2.zero;
 
+        // ANIMATION: moving / not moving
+        if (Animator != null)
+        {
+            bool isMoving = move2.sqrMagnitude > 0.001f;
+            Animator.SetBool("IsMoving", isMoving);
+        }
+
         // Convert Vector2 -> Vector3 (XZ plane)
         Vector3 desired = new Vector3(move2.x, 0f, move2.y);
 
-        // Optional: camera-relative movement (recommended for 3D)
+        // ROTATION: face movement direction
+        if (desired.sqrMagnitude > 0.001f)
+        {
+            Vector3 lookDir = new Vector3(desired.x, 0f, desired.z);
+            Quaternion targetRotation = Quaternion.LookRotation(lookDir);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 15f * Time.fixedDeltaTime);
+        }
+
+        // camera-relative movement
         if (moveReference != null)
         {
             Vector3 fwd = moveReference.forward;
@@ -106,7 +124,6 @@ public class PlayerController3D : MonoBehaviour
         if (DoJump)
         {
             DoJump = false;
-
             if (grounded)
             {
                 // Clear downward velocity so jump is consistent
@@ -145,5 +162,6 @@ public class PlayerController3D : MonoBehaviour
         if (Rigidbody == null) Rigidbody = GetComponent<Rigidbody>();
         if (Capsule == null) Capsule = GetComponent<CapsuleCollider>();
         if (ColorRenderer == null) ColorRenderer = GetComponentInChildren<Renderer>();
+        if (Animator == null) Animator = GetComponentInChildren<Animator>();
     }
 }
