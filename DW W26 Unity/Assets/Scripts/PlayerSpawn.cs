@@ -76,6 +76,36 @@ public class PlayerSpawn : MonoBehaviour
             controller.AssignColor(color);
         }
 
+        // ===== ROLE ASSIGNMENT =====
+        bool isSniper = (PlayerCount == 0);
+
+        SniperController sniperController = playerInput.GetComponent<SniperController>();
+
+        // Disable runner movement if sniper
+        if (controller != null)
+        {
+            controller.enabled = !isSniper;
+        }
+
+        // Enable sniper controller only for Player 1
+        if (sniperController != null)
+        {
+            sniperController.enabled = isSniper;
+        }
+
+        if (isSniper)
+{
+        SniperCameraFollow sniperCam = FindFirstObjectByType<SniperCameraFollow>();
+
+        if (sniperCam != null)
+        {
+        Transform anchor = playerInput.transform.Find("SniperCameraAnchor");
+        sniperCam.target = anchor;
+        }
+}
+
+        Debug.Log($"Player {PlayerCount + 1} is {(isSniper ? "SNIPER" : "RUNNER")}");
+
         // --- 4) Increment count LAST (avoids off-by-one mistakes) ---
         PlayerCount++;
     }
