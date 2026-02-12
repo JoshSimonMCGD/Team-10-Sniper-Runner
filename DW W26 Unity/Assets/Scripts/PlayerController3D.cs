@@ -111,6 +111,9 @@ public class PlayerController3D : MonoBehaviour
 
         bool grounded = IsGrounded();
 
+        if (Animator != null)
+        Animator.SetBool("IsGrounded", grounded);
+
         // Movement via velocity set (keeps gravity + collisions, avoids force-sliding)
         Vector3 vel = Rigidbody.linearVelocity; // Unity 6: linearVelocity (vs velocity in older versions)
         float control = grounded ? 1f : airControlMultiplier;
@@ -126,12 +129,15 @@ public class PlayerController3D : MonoBehaviour
             DoJump = false;
             if (grounded)
             {
+                if (Animator != null)
+                Animator.SetTrigger("Jump");
                 // Clear downward velocity so jump is consistent
                 Vector3 v = Rigidbody.linearVelocity;
                 if (v.y < 0f) v.y = 0f;
                 Rigidbody.linearVelocity = v;
 
                 Rigidbody.AddForce(Vector3.up * JumpForce, ForceMode.Impulse);
+
             }
         }
     }
