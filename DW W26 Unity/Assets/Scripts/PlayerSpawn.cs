@@ -93,16 +93,33 @@ public class PlayerSpawn : MonoBehaviour
             sniperLook.enabled = isSniper;
         }
 
-        if (isSniper)
-    {
-        SniperCameraFollow sniperCam = FindFirstObjectByType<SniperCameraFollow>();
-
-        if (sniperCam != null)
+        SniperShoot sniperShoot = playerInput.GetComponent<SniperShoot>();
+        if (sniperShoot != null)
         {
-        Transform anchor = playerInput.transform.Find("SniperCameraAnchor");
-        sniperCam.target = anchor;
+            sniperShoot.enabled = isSniper;
         }
-    }
+
+        if (isSniper)
+        {
+            SniperCameraFollow sniperCam = FindFirstObjectByType<SniperCameraFollow>();
+
+            var shoot = playerInput.GetComponent<SniperShoot>();
+            
+            if (shoot != null)
+            {
+                Camera display1Cam = GameObject.Find("Display1 Camera")?.GetComponent<Camera>();
+                if (display1Cam != null)
+                    shoot.sniperCamera = display1Cam;
+                else
+                    Debug.LogWarning("Could not find 'Display1 Camera' to assign to SniperShoot.");
+            }
+
+            if (sniperCam != null)
+            {
+            Transform anchor = playerInput.transform.Find("SniperCameraAnchor");
+            sniperCam.target = anchor;
+            }
+        }
 
         Debug.Log($"Player {PlayerCount + 1} is {(isSniper ? "SNIPER" : "RUNNER")}");
 
