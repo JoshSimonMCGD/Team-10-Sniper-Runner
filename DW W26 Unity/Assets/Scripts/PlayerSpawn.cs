@@ -79,7 +79,7 @@ public class PlayerSpawn : MonoBehaviour
         // ===== ROLE ASSIGNMENT =====
         bool isSniper = (PlayerCount == 0);
 
-        SniperController sniperController = playerInput.GetComponent<SniperController>();
+        SniperLook sniperLook = playerInput.GetComponent<SniperLook>();
 
         // Disable runner movement if sniper
         if (controller != null)
@@ -87,14 +87,14 @@ public class PlayerSpawn : MonoBehaviour
             controller.enabled = !isSniper;
         }
 
-        // Enable sniper controller only for Player 1
-        if (sniperController != null)
+        // Enable sniper look only for Player 1
+        if (sniperLook != null)
         {
-            sniperController.enabled = isSniper;
+            sniperLook.enabled = isSniper;
         }
 
         if (isSniper)
-{
+    {
         SniperCameraFollow sniperCam = FindFirstObjectByType<SniperCameraFollow>();
 
         if (sniperCam != null)
@@ -102,7 +102,7 @@ public class PlayerSpawn : MonoBehaviour
         Transform anchor = playerInput.transform.Find("SniperCameraAnchor");
         sniperCam.target = anchor;
         }
-}
+    }
 
         Debug.Log($"Player {PlayerCount + 1} is {(isSniper ? "SNIPER" : "RUNNER")}");
 

@@ -49,6 +49,8 @@ public class SniperLook : MonoBehaviour
 
         Vector2 look = _look.ReadValue<Vector2>();
 
+        Debug.Log(_look.ReadValue<Vector2>());
+
         // Mouse delta is already "per-frame", stick is more like "per-frame" too in practice with Input System.
         // Keep it simple: same sensitivity for both for now.
         float yaw = look.x * sensitivity;
