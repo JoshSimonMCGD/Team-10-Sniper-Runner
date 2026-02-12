@@ -27,6 +27,10 @@ public class PlayerController3D : MonoBehaviour
 
     public bool DoJump { get; private set; }
 
+    public bool IsDead { get; private set; }
+    [SerializeField] private GameObject VisualRoot; // assign your model root here (optional)
+    [SerializeField] private Collider MainCollider; // assign CapsuleCollider (optional)
+
     // Player input information
     private PlayerInput PlayerInput;
     private InputAction InputActionMove;
@@ -73,6 +77,8 @@ public class PlayerController3D : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (IsDead) return;
+
         if (Rigidbody == null)
         {
             Debug.Log($"{name}'s {nameof(PlayerController3D)}.{nameof(Rigidbody)} is null.");
@@ -169,5 +175,38 @@ public class PlayerController3D : MonoBehaviour
         if (Capsule == null) Capsule = GetComponent<CapsuleCollider>();
         if (ColorRenderer == null) ColorRenderer = GetComponentInChildren<Renderer>();
         if (Animator == null) Animator = GetComponentInChildren<Animator>();
+
+        if (VisualRoot == null)
+        VisualRoot = (Animator != null) ? Animator.gameObject : null;
+
+        if (MainCollider == null)
+        MainCollider = Capsule;
+    }
+
+    public void Die()
+    {
+        if (IsDead) return;
+        IsDead = true;
+
+        // Stop motion + stop physics interactions
+        if (Rigidbody != null)
+        {
+            Rigidbody.linearVelocity = Vector3.zero;
+            Rigidbody.angularVelocity = Vector3.zero;
+            Rigidbody.isKinematic = true;
+        }
+
+        if (MainCollider != null)
+            MainCollider.enabled = false;
+
+        // Hide model (optional but recommended)
+        if (VisualRoot != null)
+            VisualRoot.SetActive(false);
+
+        // Animation flags (optional)
+        if (Animator != null)
+        {
+            Animator.SetBool("IsMoving", false);
+        }
     }
 }
