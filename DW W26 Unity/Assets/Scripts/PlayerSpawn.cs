@@ -21,12 +21,6 @@ public class PlayerSpawn : MonoBehaviour
             return;
         }
 
-        // Attach Runner Camera (DisplayCamera2) to Player 1
-        if (PlayerCount == 1 && RunnerCamera != null)
-        {
-            RunnerCamera.Target = playerInput.transform;
-        }
-
         // Prevent adding in more than max number of players
         if (PlayerCount >= maxPlayerCount)
         {
