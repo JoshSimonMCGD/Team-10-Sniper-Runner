@@ -51,8 +51,6 @@ public class SniperShoot : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, maxDistance, hitMask, QueryTriggerInteraction.Ignore))
         {
-            Debug.Log($"[SniperShoot] Hit: {hit.collider.name}", hit.collider);
-
             // Look for a runner controller on the hit object or its parents
             PlayerController3D runner = hit.collider.GetComponentInParent<PlayerController3D>();
             if (runner != null)

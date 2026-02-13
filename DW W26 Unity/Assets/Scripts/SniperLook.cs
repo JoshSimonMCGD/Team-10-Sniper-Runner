@@ -22,9 +22,6 @@ public class SniperLook : MonoBehaviour
     {
         var playerInput = GetComponent<PlayerInput>();
         _look = playerInput.actions[lookActionName];
-
-        if (_look == null)
-            Debug.LogError($"SniperLook: Could not find action '{lookActionName}' on {name}.");
     }
 
     private void OnEnable()
@@ -48,8 +45,6 @@ public class SniperLook : MonoBehaviour
         if (cameraAnchor == null || _look == null) return;
 
         Vector2 look = _look.ReadValue<Vector2>();
-
-        Debug.Log(_look.ReadValue<Vector2>());
 
         // Mouse delta is already "per-frame", stick is more like "per-frame" too in practice with Input System.
         // Keep it simple: same sensitivity for both for now.
