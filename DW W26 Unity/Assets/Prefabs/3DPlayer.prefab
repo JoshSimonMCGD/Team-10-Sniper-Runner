@@ -925,7 +925,7 @@ MonoBehaviour:
   hitMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  fireCooldown: 0.8
+  fireCooldown: 1
   fireActionName: Attack
 --- !u!1 &4536800775661628049
 GameObject:
