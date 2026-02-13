@@ -15,7 +15,7 @@ public class RunnerRespawnZone : MonoBehaviour
     {
         if (Time.time < _nextAllowedTime) return;
 
-        PlayerController3D entering = other.GetComponentInParent<PlayerController3D>();
+        PlayerController3D entering = other.attachedRigidbody ? other.attachedRigidbody.GetComponent<PlayerController3D>() : other.GetComponentInParent<PlayerController3D>();
         if (entering == null) return;
 
         // Only living runners can trigger a team revive

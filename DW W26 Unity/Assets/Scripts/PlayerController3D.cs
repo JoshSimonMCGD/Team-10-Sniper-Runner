@@ -306,5 +306,8 @@ public class PlayerController3D : MonoBehaviour
         {
             Animator.SetBool("IsMoving", false);
         }
+
+        // optional safety: re-apply color
+        AssignColor(PlayerColor);
     }
 }
