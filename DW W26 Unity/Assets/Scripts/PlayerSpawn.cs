@@ -9,6 +9,15 @@ public class PlayerSpawn : MonoBehaviour
     [SerializeField] private CameraFollow RunnerCamera; // assign DisplayCamera2 here in Inspector
     public int PlayerCount { get; private set; }
 
+    [Header("Join Lock Countdown")]
+    public float JoinLockDelay = 5f;
+
+    // Read-only values you can show in UI later
+    [HideInInspector] public bool JoinLockCountdownActive = false;
+    [HideInInspector] public float JoinLockTimeRemaining = 0f;
+
+    private bool _joinLockStarted = false;
+
     public void OnPlayerJoined(PlayerInput playerInput)
     {
         int maxPlayerCount = Mathf.Min(SpawnPoints.Length, PlayerColors.Length);
@@ -115,11 +124,43 @@ public class PlayerSpawn : MonoBehaviour
             }
         }
 
+        if (!_joinLockStarted && PlayerCount == 1)
+        {
+            _joinLockStarted = true;
+            StartCoroutine(JoinLockCountdown());
+        }
+
         Debug.Log($"Player {PlayerCount + 1} is {(isSniper ? "SNIPER" : "RUNNER")}");
 
         // --- 4) Increment count LAST (avoids off-by-one mistakes) ---
         PlayerCount++;
     }
+
+    private System.Collections.IEnumerator JoinLockCountdown()
+{
+    JoinLockCountdownActive = true;
+    JoinLockTimeRemaining = JoinLockDelay;
+
+    while (JoinLockTimeRemaining > 0f)
+    {
+        JoinLockTimeRemaining -= Time.deltaTime;
+        yield return null;
+    }
+
+    JoinLockTimeRemaining = 0f;
+    JoinLockCountdownActive = false;
+
+    var pim = FindFirstObjectByType<PlayerInputManager>();
+    if (pim != null)
+    {
+        pim.DisableJoining();
+        Debug.Log("Joining locked (countdown finished).");
+    }
+    else
+    {
+        Debug.LogWarning("PlayerInputManager not found; could not DisableJoining().");
+    }
+}
 
     public void OnPlayerLeft(PlayerInput playerInput)
     {

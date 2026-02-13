@@ -109,6 +109,16 @@ public class PlayerController3D : MonoBehaviour
     {
         if (InputActionJump != null && InputActionJump.WasPressedThisFrame())
             DoJump = true;
+
+        
+
+        #if UNITY_EDITOR
+        // DEBUG: Press R to revive this player at world origin
+        if (IsDead && Keyboard.current.rKey.wasPressedThisFrame)
+        {
+            ReviveAt(Vector3.zero, Quaternion.identity);
+        }
+        #endif
     }
 
     void FixedUpdate()
@@ -240,6 +250,58 @@ public class PlayerController3D : MonoBehaviour
             VisualRoot.SetActive(false);
 
         // Animation flags (optional)
+        if (Animator != null)
+        {
+            Animator.SetBool("IsMoving", false);
+        }
+    }
+
+    public void ReviveAt(Transform spawnPoint)
+    {
+        if (spawnPoint == null)
+        {
+            Debug.LogWarning("ReviveAt called with null spawnPoint.");
+            return;
+        }
+
+        ReviveAt(spawnPoint.position, spawnPoint.rotation);
+    }
+
+    public void ReviveAt(Vector3 position, Quaternion rotation)
+    {
+        // Mark alive first (so movement can resume after everything is enabled)
+        IsDead = false;
+
+        // Move the player safely
+        if (Rigidbody != null)
+        {
+            // While kinematic, we can reposition without physics fighting us
+            Rigidbody.isKinematic = true;
+
+            Rigidbody.linearVelocity = Vector3.zero;
+            Rigidbody.angularVelocity = Vector3.zero;
+
+            Rigidbody.position = position;
+            Rigidbody.rotation = rotation;
+
+            // Re-enable physics
+            Rigidbody.isKinematic = false;
+            Rigidbody.WakeUp();
+        }
+        else
+        {
+            transform.SetPositionAndRotation(position, rotation);
+        }
+
+        // Re-enable collisions
+        if (MainCollider != null)
+            MainCollider.enabled = true;
+
+        // Show model again
+        if (VisualRoot != null)
+            VisualRoot.SetActive(true);
+
+        // Reset animation flags (optional)
         if (Animator != null)
         {
             Animator.SetBool("IsMoving", false);

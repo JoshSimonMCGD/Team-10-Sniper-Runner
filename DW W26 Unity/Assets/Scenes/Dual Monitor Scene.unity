@@ -1942,6 +1942,9 @@ MonoBehaviour:
   - {r: 1, g: 0.5668886, b: 0, a: 1}
   - {r: 0.37434292, g: 0, b: 1, a: 1}
   RunnerCamera: {fileID: 1681613935}
+  JoinLockDelay: 10
+  JoinLockCountdownActive: 0
+  JoinLockTimeRemaining: 0
 --- !u!1 &916337142
 GameObject:
   m_ObjectHideFlags: 0
