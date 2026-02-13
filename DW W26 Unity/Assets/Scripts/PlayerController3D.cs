@@ -46,11 +46,47 @@ public class PlayerController3D : MonoBehaviour
             return;
         }
 
-        // Most materials use "_BaseColor" (URP Lit) or "color" (legacy).
-        // Try both safely.
-        var mat = ColorRenderer.material;
-        if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
-        else if (mat.HasProperty("_Color")) mat.SetColor("_Color", color);
+        // Use LOD0's material as a fallback for any LOD renderers that have missing material slots
+        Material fallbackMat = ColorRenderer.sharedMaterial != null ? ColorRenderer.sharedMaterial : ColorRenderer.material;
+
+        // Apply to ALL renderers under this player (includes Mascot_LOD1, Mascot_LOD2, etc.)
+        Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
+        MaterialPropertyBlock mpb = new MaterialPropertyBlock();
+
+        foreach (Renderer r in renderers)
+        {
+            if (r == null) continue;
+
+            // If any material slots are missing, fill them with the fallback material
+            // (prevents LOD meshes showing default/missing at distance)
+            if (fallbackMat != null)
+            {
+                var shared = r.sharedMaterials;
+                bool hasMissing = (shared == null || shared.Length == 0);
+
+                if (!hasMissing)
+                {
+                    for (int i = 0; i < shared.Length; i++)
+                    {
+                        if (shared[i] == null) { hasMissing = true; break; }
+                    }
+                }
+
+                if (hasMissing)
+                {
+                    int count = (shared != null && shared.Length > 0) ? shared.Length : 1;
+                    Material[] filled = new Material[count];
+                    for (int i = 0; i < count; i++) filled[i] = fallbackMat;
+                    r.sharedMaterials = filled;
+                }
+            }
+
+            // Per-player tint without duplicating materials
+            r.GetPropertyBlock(mpb);
+            mpb.SetColor("_BaseColor", color); // URP Lit
+            mpb.SetColor("_Color", color);     // Built-in/legacy
+            r.SetPropertyBlock(mpb);
+        }
     }
 
     public void AssignPlayerInputDevice(PlayerInput playerInput)
