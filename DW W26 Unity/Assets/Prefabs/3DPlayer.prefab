@@ -870,7 +870,7 @@ MonoBehaviour:
   moveReference: {fileID: 0}
   <MoveSpeed>k__BackingField: 6
   <JumpForce>k__BackingField: 5
-  airControlMultiplier: 0.5
+  airControlMultiplier: 0.8
   <Animator>k__BackingField: {fileID: 3944363907634326826}
   groundCheckDistance: 0.15
   groundLayers:
