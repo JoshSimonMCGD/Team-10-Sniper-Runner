@@ -10,6 +10,8 @@ public class SniperShoot : MonoBehaviour
     [Header("Settings")]
     public float maxDistance = 10000f;
     public LayerMask hitMask = ~0; // everything by default
+    public float fireCooldown = 0.6f;
+    private float _nextFireTime = 0f;
 
     [Header("Input (Action name in Player map)")]
     public string fireActionName = "Attack";
@@ -40,7 +42,10 @@ public class SniperShoot : MonoBehaviour
         if (sniperCamera == null || _fire == null) return;
 
         // fire once per press
-        if (!_fire.WasPressedThisFrame()) return;
+        if (!_fire.IsPressed()) return;
+
+        if (Time.time < _nextFireTime) return;
+        _nextFireTime = Time.time + fireCooldown;
 
         Ray ray = new Ray(sniperCamera.transform.position, sniperCamera.transform.forward);
 
