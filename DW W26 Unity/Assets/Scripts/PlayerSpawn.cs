@@ -82,6 +82,11 @@ public class PlayerSpawn : MonoBehaviour
         // ===== ROLE ASSIGNMENT =====
         bool isSniper = (PlayerCount == 0);
 
+        if (!isSniper && SFXManager.Instance != null)
+        {
+            SFXManager.Instance.PlayRunnerSpawn();
+        }
+
         SniperLook sniperLook = playerInput.GetComponent<SniperLook>();
 
         // Disable runner movement if sniper

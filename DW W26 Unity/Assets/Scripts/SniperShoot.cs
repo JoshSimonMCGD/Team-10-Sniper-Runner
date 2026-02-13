@@ -47,6 +47,11 @@ public class SniperShoot : MonoBehaviour
         if (Time.time < _nextFireTime) return;
         _nextFireTime = Time.time + fireCooldown;
 
+        if (SFXManager.Instance != null)
+        {
+            SFXManager.Instance.PlaySniperShot();
+        }
+
         Ray ray = new Ray(sniperCamera.transform.position, sniperCamera.transform.forward);
 
         if (Physics.Raycast(ray, out RaycastHit hit, maxDistance, hitMask, QueryTriggerInteraction.Ignore))
